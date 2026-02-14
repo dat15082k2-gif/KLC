@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KLC Dashboard Clone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar">
+        <div class="logo-wrap">
+          <img src="https://ilove.ghemassageklc.com/img/logo-klc.png" alt="KLC" />
+        </div>
+        <nav id="menu" class="menu"></nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="toggleMenu" class="ghost-btn">☰</button>
+            <div>
+              <h1 id="pageTitle">Dashboard</h1>
+              <p id="breadcrumb">Home / Dashboard</p>
+            </div>
+          </div>
+          <div class="topbar-user">Nguyễn Huỳnh Phước Đạt</div>
+        </header>
+
+        <section id="viewDashboard" class="view active">
+          <div class="stats-grid">
+            <div class="stat-card purple"><p>5</p><span>LƯỢT KHÁCH LIÊN HỆ</span></div>
+            <div class="stat-card blue"><p>2</p><span>LƯỢT KHÁCH GHÉ QUẦY</span></div>
+            <div class="stat-card yellow"><p>5</p><span>LƯỢT KHÁCH MUA HÀNG</span></div>
+            <div class="stat-card red"><p>66.295.000</p><span>DOANH THU CỬA HÀNG</span></div>
+          </div>
+
+          <div class="panel">
+            <h3>Nguồn KH liên hệ</h3>
+            <table>
+              <thead>
+                <tr><th>Kênh</th><th>Lượt</th><th>Tỷ lệ</th></tr>
+              </thead>
+              <tbody id="dashboardData"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="viewCustomers" class="view">
+          <div class="panel">
+            <div class="panel-title">
+              <h3>Danh sách khách hàng</h3>
+              <button id="openModal" class="primary-btn">+ Thêm KH</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Tên KH</th><th>Điện thoại</th><th>Kênh liên hệ</th><th>Kết quả</th><th>Sản phẩm</th>
+                </tr>
+              </thead>
+              <tbody id="customersTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="viewVisits" class="view">
+          <div class="panel">
+            <h3>Ghé thăm</h3>
+            <form id="visitForm" class="form-grid">
+              <input name="customerName" placeholder="Họ và tên khách hàng" required />
+              <input name="phone" placeholder="Số điện thoại" required />
+              <select name="channel" required>
+                <option value="">Chọn kênh liên hệ</option>
+                <option>Kênh Tiki</option>
+                <option>Kênh Shopee</option>
+                <option>Landingpage</option>
+                <option>Facebook</option>
+              </select>
+              <select name="result" required>
+                <option value="">Kết quả ghé thăm</option>
+                <option>Đã chốt bill</option>
+                <option>Chờ chăm sóc</option>
+                <option>Không liên hệ được</option>
+              </select>
+              <input name="product" placeholder="Sản phẩm quan tâm" required />
+              <textarea name="note" placeholder="Ghi chú"></textarea>
+              <button class="primary-btn" type="submit">Lưu Ghé thăm</button>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="customerModal" class="modal">
+      <div class="modal-content">
+        <div class="panel-title">
+          <h3>Thêm KH</h3>
+          <button id="closeModal" class="ghost-btn">✕</button>
+        </div>
+        <form id="customerForm" class="form-grid">
+          <select name="title"><option>Anh</option><option>Chị</option></select>
+          <input name="name" placeholder="Tên khách hàng" required />
+          <input name="phone" placeholder="Số điện thoại" required />
+          <input name="facebook" placeholder="Facebook" />
+          <input name="address" placeholder="Địa chỉ" />
+          <button class="primary-btn" type="submit">Lưu thông tin</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
