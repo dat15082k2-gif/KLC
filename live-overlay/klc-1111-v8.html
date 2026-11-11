@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KLC 11.11 Overlay V8</title>
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+  /* Mặc định: overlay bám theo bề ngang khung widget (kéo khung widget trong PRISM để chỉnh to nhỏ) */
+  :root { --fw: 100vw; --co: 1; --cach: 0; }
+  .ov {
+    position: absolute; display: block; pointer-events: none;
+    width: calc(var(--fw) * var(--co));
+    left: calc((100vw - var(--fw) * var(--co)) / 2);
+    top: calc(var(--fw) * var(--cach));
+    height: auto;
+    border-radius: calc(var(--fw) * 0.03 * var(--bo, 1));
+  }
+  #vid { display: none; }
+</style>
+</head>
+<body>
+<!-- Mặc định: ảnh động WebP nền trong suốt (chạy trên iPhone/PRISM, Android, OBS) -->
+<img id="ov" class="ov" src="klc-1111-v8.webp" alt="">
+<!-- ?video=1: video WebM gốc (chỉ cho OBS / Chrome máy tính) -->
+<video id="vid" class="ov" muted loop autoplay playsinline preload="auto"></video>
+<script>
+  // ===== Chỉnh bằng link =====
+  // co=1     -> to hết khung widget (mặc định). co=0.75 = 75%
+  // cach=0   -> sát mép trên (mặc định). Tăng lên để đẩy xuống
+  const q = new URLSearchParams(location.search);
+  const num = (k, d, lo, hi) => { const v = parseFloat(q.get(k)); return isNaN(v) ? d : Math.min(hi, Math.max(lo, v)); };
+  let raw = parseFloat(q.get('co'));
+  if (raw > 1.5) raw = raw / 100;                   // chấp nhận cả co=75
+  const co = isNaN(raw) ? 1 : Math.min(1, Math.max(0.3, raw));
+  const cach = num('cach', 0, 0, 120);
+  const root = document.documentElement.style;
+  root.setProperty('--co', co);
+  root.setProperty('--cach', cach / 100);
+  root.setProperty('--bo', 0);                       // nền trong suốt: không bo góc
+
+  if (q.get('video') === '1') {
+    const v = document.getElementById('vid');
+    v.src = 'klc-1111-v8.webm'; v.style.display = 'block';
+    document.getElementById('ov').style.display = 'none';
+    v.play().catch(() => {});
+  }
+</script>
+</body>
+</html>
