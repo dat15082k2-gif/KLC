@@ -37,7 +37,7 @@
   const root = document.documentElement.style;
   root.setProperty('--co', co);
   root.setProperty('--cach', cach / 100);
-  root.setProperty('--bo', co < 1 ? 1 : 0);          // to hết cỡ thì không bo góc
+  root.setProperty('--bo', 0);                       // nền trong suốt: không bo góc
 
   if (q.get('video') === '1') {
     const v = document.getElementById('vid');
