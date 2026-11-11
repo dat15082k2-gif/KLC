@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KLC 11.11 Sale Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ===== THEMES (đổi bằng ?mau=cam | xanh | do) ===== */
+  :root {
+    --bg1: #FF7A1A; --bg2: #FF5A00; --bg3: #FF9A3D;
+    --ext1: #8A1A06; --ext2: #4A0A02;
+    --face1: #FFF8DC; --face2: #FFE08A; --face3: #F2B930;
+    --strip: #111111; --hi: #FFE14D;
+    --ticket1: #FFB52E; --ticket2: #FF8A00;
+  }
+  body.xanh {
+    --bg1: #128B9B; --bg2: #0C6E7B; --bg3: #2FB3C2;
+    --ext1: #053F47; --ext2: #021F23;
+    --strip: #06343A; --ticket1: #FFD34D; --ticket2: #F5A300;
+  }
+  body.do {
+    --bg1: #E8262B; --bg2: #C3121A; --bg3: #FF4D4D;
+    --ext1: #5C0508; --ext2: #2E0204;
+    --strip: #111111;
+  }
+
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; -webkit-font-smoothing: antialiased; }
+
+  .stage { position: absolute; left: 0; right: 0; top: 0; height: 80vw; }
+
+  /* ===== BACKGROUND BAND ===== */
+  .band {
+    position: absolute; left: 0; right: 0; top: 0; height: 74vw;
+    background:
+      radial-gradient(circle at 50% 38%, var(--bg3) 0%, transparent 55%),
+      radial-gradient(circle at 12% 85%, rgba(255,255,255,0.18) 0%, transparent 30%),
+      radial-gradient(circle at 92% 18%, rgba(255,255,255,0.16) 0%, transparent 28%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    clip-path: polygon(0 0, 100% 0, 100% 84%, 0 92%);
+    overflow: hidden;
+  }
+  .band::before {          /* slow moving light rays */
+    content: ""; position: absolute; left: 50%; top: 36%;
+    width: 160vw; height: 160vw; margin: -80vw 0 0 -80vw;
+    background: repeating-conic-gradient(rgba(255,255,255,0.10) 0deg 6deg, transparent 6deg 18deg);
+    -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+            mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+    animation: spin 30s linear infinite;
+  }
+
+  /* ===== 3D TITLE BLOCK ===== */
+  .title { position: absolute; top: 7vw; left: 0; right: 0; text-align: center; transform: rotate(-4deg); }
+
+  .num { position: relative; display: inline-block; font-weight: 900; font-size: 31vw; line-height: 1; letter-spacing: -0.8vw;
+         animation: pop 2.6s ease-in-out infinite; transform-origin: 50% 60%; }
+  .num .back {
+    color: var(--ext1);
+    text-shadow:
+      0.35vw 0.35vw 0 var(--ext1), 0.7vw 0.7vw 0 var(--ext1), 1.05vw 1.05vw 0 var(--ext1),
+      1.4vw 1.4vw 0 var(--ext1), 1.75vw 1.75vw 0 var(--ext1), 2.1vw 2.1vw 0 var(--ext2),
+      2.45vw 2.45vw 0 var(--ext2), 2.8vw 2.8vw 0 var(--ext2),
+      3.2vw 3.4vw 2.2vw rgba(0,0,0,0.45);
+  }
+  .num .front {
+    position: absolute; left: 0; top: 0;
+    background: linear-gradient(100deg, var(--face3) 0%, var(--face1) 22%, #FFFFFF 30%, var(--face1) 38%, var(--face2) 55%, var(--face3) 80%, var(--face2) 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    animation: shine 3s linear infinite;
+  }
+
+  .line { position: relative; display: table; margin-left: auto; margin-right: auto; font-weight: 900; color: #fff; white-space: nowrap; line-height: 1.08; }
+  .l1 { font-size: 7.4vw; margin-top: 0.6vw; }
+  .l2 { font-size: 9.6vw; animation: flash 1.1s steps(1) infinite; }
+  .ext-sm {
+    text-shadow:
+      0.25vw 0.25vw 0 var(--ext1), 0.5vw 0.5vw 0 var(--ext1), 0.75vw 0.75vw 0 var(--ext1),
+      1vw 1vw 0 var(--ext2), 1.25vw 1.25vw 0 var(--ext2),
+      1.6vw 1.8vw 1.4vw rgba(0,0,0,0.4);
+  }
+
+  /* ===== TICKER STRIP ===== */
+  .strip {
+    position: absolute; left: -6vw; right: -6vw; top: 63vw; height: 11vw;
+    background: var(--strip);
+    transform: rotate(-3.2deg);
+    overflow: hidden;
+    box-shadow: 0 1.2vw 2vw rgba(0,0,0,0.35);
+    border-top: 0.5vw solid rgba(255,255,255,0.08);
+  }
+  .track { position: absolute; top: 0; left: 0; height: 100%; display: flex; align-items: center; white-space: nowrap;
+           animation: scroll var(--dur, 16s) linear infinite; will-change: transform; }
+  .track span.item { font-weight: 900; font-size: 6.6vw; color: #fff; padding: 0 3vw; letter-spacing: 0.1vw; }
+  .track span.item b { color: var(--hi); font-weight: 900; }
+  .track span.dot { color: var(--hi); font-size: 4.6vw; }
+
+  /* ===== FLYING VOUCHERS + COINS ===== */
+  .ticket {
+    position: absolute; width: 22vw; height: 9vw;
+    background: linear-gradient(180deg, var(--ticket1), var(--ticket2));
+    border-radius: 1.2vw;
+    color: #fff; font-weight: 900; font-size: 3.4vw; letter-spacing: 0.2vw;
+    display: flex; align-items: center; justify-content: center;
+    text-shadow: 0 0.3vw 0 rgba(0,0,0,0.25);
+    -webkit-mask: radial-gradient(circle at 0 50%, transparent 1.6vw, #000 1.7vw) left / 51% 100% no-repeat,
+                  radial-gradient(circle at 100% 50%, transparent 1.6vw, #000 1.7vw) right / 51% 100% no-repeat;
+            mask: radial-gradient(circle at 0 50%, transparent 1.6vw, #000 1.7vw) left / 51% 100% no-repeat,
+                  radial-gradient(circle at 100% 50%, transparent 1.6vw, #000 1.7vw) right / 51% 100% no-repeat;
+    box-shadow: -6vw 3vw 4vw rgba(255,255,255,0.25);
+    opacity: 0;
+  }
+  .t1 { left: 2vw;  top: 10vw; --r: -28deg; --dx: 10vw;  --dy: 8vw;  animation: fly 3.4s ease-out infinite; }
+  .t2 { right: 1vw; top: 6vw;  --r: 30deg;  --dx: -10vw; --dy: 9vw;  animation: fly 3.4s ease-out infinite 0.9s; }
+  .t3 { left: -2vw; top: 50vw; --r: -18deg; --dx: 12vw;  --dy: -6vw; animation: fly 3.4s ease-out infinite 1.7s; }
+  .t4 { right: -3vw; top: 48vw; --r: 22deg; --dx: -12vw; --dy: -7vw; animation: fly 3.4s ease-out infinite 2.5s; }
+
+  .coin {
+    position: absolute; width: 5vw; height: 5vw; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #FFF6B0, #FFD028 45%, #D99200 100%);
+    box-shadow: inset 0 0 0 0.5vw rgba(255,255,255,0.35);
+    opacity: 0; animation: coin 2.8s ease-in infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes shine { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+  @keyframes pop { 0%,100% { transform: scale(1); } 8% { transform: scale(1.07); } 16% { transform: scale(0.98); } 24% { transform: scale(1.02); } 32% { transform: scale(1); } }
+  @keyframes flash { 0% { color: #fff; } 50% { color: var(--hi); } }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes fly {
+    0%   { opacity: 0; transform: translate(calc(var(--dx) * -1.5), calc(var(--dy) * -1.5)) rotate(var(--r)) scale(0.7); }
+    18%  { opacity: 1; }
+    45%  { opacity: 1; transform: translate(0, 0) rotate(var(--r)) scale(1); }
+    70%  { opacity: 0.9; transform: translate(calc(var(--dx) * 0.25), calc(var(--dy) * 0.25)) rotate(calc(var(--r) + 6deg)) scale(1.02); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(calc(var(--r) + 12deg)) scale(0.9); }
+  }
+  @keyframes coin {
+    0%   { opacity: 0; transform: translateY(-6vw) scaleX(1); }
+    15%  { opacity: 1; }
+    40%  { transform: translateY(6vw) scaleX(0.2); }
+    65%  { transform: translateY(16vw) scaleX(1); opacity: 1; }
+    100% { opacity: 0; transform: translateY(28vw) scaleX(0.3); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="band"></div>
+
+  <div class="ticket t1">VOUCHER</div>
+  <div class="ticket t2">VOUCHER</div>
+  <div class="ticket t3">VOUCHER</div>
+  <div class="ticket t4">VOUCHER</div>
+
+  <div class="title">
+    <span class="num"><span class="back" id="numBack">11.11</span><span class="front" id="numFront">11.11</span></span>
+    <span class="line l1 ext-sm" id="d1">KHUYẾN MÃI LỚN NHẤT NĂM</span>
+    <span class="line l2 ext-sm" id="d2">SIÊU DEAL GHẾ MASSAGE</span>
+  </div>
+
+  <div class="strip"><div class="track" id="track"></div></div>
+</div>
+
+<script>
+  // ===== Sửa nội dung bằng link =====
+  // sale.html?mau=cam&so=11.11&d1=KHUYẾN MÃI LỚN NHẤT NĂM&d2=SIÊU DEAL GHẾ MASSAGE
+  //          &chu=TRẢ GÓP [0%]|VOUCHER LÊN ĐẾN [500K]|GIAO HÀNG [HỎA TỐC]|QUÀ TẶNG [HẤP DẪN]
+  // Chữ trong [ ] sẽ có màu vàng nổi bật.
+  const q = new URLSearchParams(location.search);
+
+  const mau = (q.get('mau') || 'cam').toLowerCase();
+  if (mau !== 'cam') document.body.classList.add(mau);
+
+  if (q.has('so')) { document.getElementById('numBack').textContent = q.get('so'); document.getElementById('numFront').textContent = q.get('so'); }
+  if (q.has('d1')) document.getElementById('d1').textContent = q.get('d1');
+  if (q.has('d2')) document.getElementById('d2').textContent = q.get('d2');
+  if (q.get('d1') === '0') document.getElementById('d1').style.display = 'none';
+
+  const cach = parseFloat(q.get('cach') || '0');
+  if (cach) document.getElementById('stage').style.top = cach + 'vw';
+
+  // Auto-fit long lines to 92% width
+  const fitLine = (el, start) => {
+    let fs = start; el.style.fontSize = fs + 'vw';
+    while (el.offsetWidth > window.innerWidth * 0.92 && fs > 3) { fs -= 0.2; el.style.fontSize = fs + 'vw'; }
+  };
+
+  // ===== Ticker =====
+  const raw = q.get('chu') || 'TRẢ GÓP [0%]|VOUCHER [KHUYẾN MÃI]|GIAO HÀNG [HỎA TỐC]|QUÀ TẶNG [HẤP DẪN]';
+  const items = raw.split('|').map(s => s.trim()).filter(Boolean);
+  const track = document.getElementById('track');
+  const build = () => {
+    const frag = document.createDocumentFragment();
+    items.forEach(t => {
+      const item = document.createElement('span'); item.className = 'item';
+      t.split(/(\[[^\]]*\])/).forEach(part => {
+        if (!part) return;
+        if (part.startsWith('[') && part.endsWith(']')) { const b = document.createElement('b'); b.textContent = part.slice(1, -1); item.appendChild(b); }
+        else item.appendChild(document.createTextNode(part));
+      });
+      const dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = '★';
+      frag.appendChild(item); frag.appendChild(dot);
+    });
+    return frag;
+  };
+  // two identical halves -> seamless loop; repeat until each half is wider than the screen
+  const half = document.createElement('span'); half.style.display = 'flex'; half.style.alignItems = 'center';
+  track.appendChild(half);
+  do { half.appendChild(build()); } while (half.scrollWidth < window.innerWidth * 1.2);
+  track.appendChild(half.cloneNode(true));
+  const speed = parseFloat(q.get('tocdo') || '1');           // tocdo=1.5 chạy nhanh hơn
+  const pxPerSec = (window.innerWidth * 0.32) * speed;
+  track.style.setProperty('--dur', (half.scrollWidth / pxPerSec).toFixed(2) + 's');
+
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+    fitLine(document.getElementById('d1'), 7.4);
+    fitLine(document.getElementById('d2'), 9.6);
+  });
+
+  // ===== Coins =====
+  const stage = document.getElementById('stage');
+  [[14,4,0],[80,2,0.7],[30,14,1.4],[66,12,2.1],[92,30,1.0],[6,34,1.8]].forEach(([x, y, d]) => {
+    const c = document.createElement('span'); c.className = 'coin';
+    c.style.left = x + 'vw'; c.style.top = y + 'vw'; c.style.animationDelay = d + 's';
+    stage.insertBefore(c, stage.querySelector('.title'));
+  });
+</script>
+</body>
+</html>
