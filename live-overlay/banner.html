@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KLC 11.11 Banner Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0C6E7B;
+    --teal-deep: #06434B;
+    --gold: #FFC93C;
+    --gold-deep: #E89B00;
+    --cream: #FFF6DC;
+  }
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; -webkit-font-smoothing: antialiased; }
+
+  /* ===== BAND ===== */
+  .band {
+    position: absolute; left: 0; right: 0; top: 0;
+    height: 84vw;
+    background: linear-gradient(to bottom,
+      rgba(6,67,75,0.98) 0%,
+      rgba(12,110,123,0.95) 45%,
+      rgba(12,110,123,0.88) 66%,
+      rgba(12,110,123,0.55) 82%,
+      rgba(12,110,123,0) 100%);
+    overflow: hidden;
+  }
+  /* diagonal sheen pattern */
+  .band::before {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(115deg, rgba(255,255,255,0.045) 0 2vw, transparent 2vw 7vw);
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 95%);
+            mask-image: linear-gradient(to bottom, #000 60%, transparent 95%);
+  }
+  /* gold hairline at the very top */
+  .band::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 0.9vw;
+    background: linear-gradient(90deg, transparent, var(--gold), #fff3c4, var(--gold), transparent);
+    background-size: 200% 100%;
+    animation: line 3s linear infinite;
+  }
+
+  /* ===== BRAND LINE ===== */
+  .brand {
+    position: absolute; top: 4.2vw; left: 0; right: 0; text-align: center;
+    color: var(--cream); font-weight: 700; font-size: 3vw; letter-spacing: 0.6vw;
+    opacity: 0.9;
+  }
+  .brand b { color: var(--gold); font-weight: 800; }
+
+  /* ===== RAYS behind 11.11 ===== */
+  .rays {
+    position: absolute; top: 18vw; left: 50%;
+    width: 120vw; height: 120vw; margin: -60vw 0 0 -60vw;
+    background: repeating-conic-gradient(from 0deg, rgba(255,214,102,0.20) 0deg 7deg, transparent 7deg 22deg);
+    -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 28%, transparent 52%);
+            mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 28%, transparent 52%);
+    animation: spin 26s linear infinite;
+  }
+
+  /* ===== HEADLINE 11.11 ===== */
+  .hero {
+    position: absolute; top: 7vw; left: 0; right: 0; text-align: center;
+    filter: drop-shadow(0 0.6vw 0 #7a4a00) drop-shadow(0 0 3vw rgba(255,201,60,0.55));
+    animation: heroPulse 2.4s ease-in-out infinite;
+  }
+  .num {
+    display: inline-block;
+    font-weight: 900; font-size: 21vw; line-height: 1; letter-spacing: -0.6vw;
+    background: linear-gradient(100deg,
+      #FFB200 0%, #FFE48A 18%, #FFFFFF 26%, #FFE48A 34%, #FFC93C 50%, #E89B00 70%, #FFE48A 85%, #FFB200 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    animation: shine 2.8s linear infinite;
+  }
+
+  /* ===== RIBBON ===== */
+  .ribbon-wrap { position: absolute; top: 29.5vw; left: 0; right: 0; text-align: center; }
+  .ribbon {
+    position: relative; display: inline-block;
+    padding: 1.6vw 6vw 1.8vw;
+    background: linear-gradient(180deg, #FFD95E, var(--gold) 55%, var(--gold-deep));
+    color: var(--teal-deep);
+    font-weight: 900; font-size: 5.2vw; letter-spacing: 0.15vw; white-space: nowrap;
+    border-radius: 1.4vw;
+    box-shadow: 0 0.8vw 0 #9a6300, 0 0 0 0.5vw rgba(255,255,255,0.35) inset;
+    animation: ribbonFlash 1.6s steps(1) infinite, ribbonBob 1.6s ease-in-out infinite;
+  }
+  .ribbon::before, .ribbon::after {
+    content: ""; position: absolute; top: 1.6vw; width: 4vw; height: 100%;
+    background: #B87800; z-index: -1;
+  }
+  .ribbon::before { left: -2.6vw; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40% 50%); }
+  .ribbon::after  { right: -2.6vw; clip-path: polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%); }
+  .ribbon .sweep { position: absolute; inset: 0; border-radius: 1.4vw; overflow: hidden; pointer-events: none; }
+  .ribbon .sweep::after {
+    content: ""; position: absolute; top: -30%; left: -40%; width: 25%; height: 160%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.85), transparent);
+    transform: skewX(-20deg); animation: sweep 2.6s ease-in-out infinite;
+  }
+
+  /* ===== PERKS ===== */
+  .perks {
+    position: absolute; top: 43vw; left: 3vw; right: 3vw;
+    display: flex; justify-content: space-between;
+  }
+  .perk { width: 22vw; text-align: center; animation: float 3s ease-in-out infinite; }
+  .perk:nth-child(2) { animation-delay: -0.75s; }
+  .perk:nth-child(3) { animation-delay: -1.5s; }
+  .perk:nth-child(4) { animation-delay: -2.25s; }
+
+  .badge {
+    position: relative; width: 16vw; height: 16vw; margin: 0 auto;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffffff 0%, #E8F7F8 55%, #C9EBEE 100%);
+    border: 0.8vw solid var(--gold);
+    box-shadow: 0 1vw 0 rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.35s cubic-bezier(.3,1.6,.5,1), box-shadow 0.35s;
+  }
+  .badge svg { width: 10vw; height: 10vw; }
+  .badge .ring {
+    position: absolute; inset: -2.2vw; border-radius: 50%;
+    border: 0.5vw dashed rgba(255,214,102,0.0);
+    transition: border-color 0.35s;
+    animation: spin 6s linear infinite;
+  }
+  .label {
+    margin-top: 2vw;
+    color: #fff; font-weight: 800; font-size: 3.3vw; line-height: 1.22;
+    text-shadow: 0 0.35vw 0.6vw rgba(0,0,0,0.55);
+    transition: color 0.35s; text-wrap: balance;
+  }
+
+  /* active (spotlight cycles through perks) */
+  .perk.active .badge { transform: scale(1.14); box-shadow: 0 1vw 0 rgba(0,0,0,0.18), 0 0 4vw 1vw rgba(255,201,60,0.75); }
+  .perk.active .badge .ring { border-color: rgba(255,214,102,0.95); }
+  .perk.active .label { color: var(--gold); }
+
+  /* ===== SPARKLES ===== */
+  .spark {
+    position: absolute; width: 3vw; height: 3vw;
+    background: #fff;
+    clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+    opacity: 0; animation: twinkle 2.2s ease-in-out infinite;
+  }
+
+  @keyframes line { from { background-position: 200% 0; } to { background-position: 0 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes shine { from { background-position: 125% 0; } to { background-position: -125% 0; } }
+  @keyframes heroPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+  @keyframes ribbonFlash {
+    0%   { background: linear-gradient(180deg, #FFD95E, #FFC93C 55%, #E89B00); color: #06434B; }
+    50%  { background: linear-gradient(180deg, #ffffff, #FFF3C4 55%, #FFD95E); color: #C0262B; }
+  }
+  @keyframes ribbonBob { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-0.5vw) scale(1.03); } }
+  @keyframes sweep { 0% { left: -40%; } 55%,100% { left: 130%; } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.2vw); } }
+  @keyframes twinkle { 0%,100% { opacity: 0; transform: scale(0.3) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+</style>
+</head>
+<body>
+
+<div class="band" id="band">
+  <div class="rays"></div>
+
+  <div class="brand" id="brand">GHẾ MASSAGE <b>KLC</b> BẾN LỨC</div>
+
+  <div class="hero"><span class="num" id="num">11.11</span></div>
+
+  <div class="ribbon-wrap">
+    <div class="ribbon"><span id="slogan">KHUYẾN MÃI LỚN NHẤT NĂM</span><span class="sweep"></span></div>
+  </div>
+
+  <div class="perks" id="perks">
+    <!-- 1. TRẢ GÓP 0% -->
+    <div class="perk">
+      <div class="badge"><span class="ring"></span>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="6" y="14" width="46" height="32" rx="5" fill="#0C6E7B"/>
+          <rect x="6" y="21" width="46" height="6" fill="#06434B"/>
+          <rect x="11" y="33" width="14" height="4" rx="2" fill="#9ED9DF"/>
+          <circle cx="47" cy="44" r="13" fill="#FFC93C" stroke="#fff" stroke-width="2.5"/>
+          <text x="47" y="49" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-weight="900" font-size="12.5" fill="#06434B">0%</text>
+        </svg>
+      </div>
+      <div class="label" id="p1">Trả góp 0%</div>
+    </div>
+
+    <!-- 2. VOUCHER -->
+    <div class="perk">
+      <div class="badge"><span class="ring"></span>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <g transform="rotate(-12 32 32)">
+            <path d="M8 18h48v8a6 6 0 0 0 0 12v8H8v-8a6 6 0 0 0 0-12z" fill="#FFC93C" stroke="#E89B00" stroke-width="2"/>
+            <line x1="22" y1="20" x2="22" y2="44" stroke="#E89B00" stroke-width="2" stroke-dasharray="3 3"/>
+            <text x="40" y="38" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-weight="900" font-size="15" fill="#0C6E7B">%</text>
+          </g>
+          <circle cx="50" cy="13" r="4" fill="#E2412F"/>
+          <circle cx="13" cy="52" r="3" fill="#0C6E7B"/>
+        </svg>
+      </div>
+      <div class="label" id="p2">Voucher<br>khuyến mãi</div>
+    </div>
+
+    <!-- 3. GIAO HÀNG HỎA TỐC -->
+    <div class="perk">
+      <div class="badge"><span class="ring"></span>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <line x1="2" y1="24" x2="13" y2="24" stroke="#FFC93C" stroke-width="3" stroke-linecap="round"/>
+          <line x1="5" y1="31" x2="13" y2="31" stroke="#FFC93C" stroke-width="3" stroke-linecap="round"/>
+          <line x1="2" y1="38" x2="13" y2="38" stroke="#FFC93C" stroke-width="3" stroke-linecap="round"/>
+          <rect x="16" y="18" width="27" height="24" rx="3" fill="#0C6E7B"/>
+          <path d="M43 25h9l7 9v8H43z" fill="#06434B"/>
+          <path d="M46 28h5l4 5h-9z" fill="#9ED9DF"/>
+          <path d="M27 22l-4 9h5l-2 8 8-11h-5l3-6z" fill="#FFC93C"/>
+          <circle cx="24" cy="44" r="5" fill="#1d1d1d" stroke="#fff" stroke-width="2"/>
+          <circle cx="51" cy="44" r="5" fill="#1d1d1d" stroke="#fff" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="label" id="p3">Giao hàng<br>hỏa tốc</div>
+    </div>
+
+    <!-- 4. QUÀ TẶNG -->
+    <div class="perk">
+      <div class="badge"><span class="ring"></span>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="12" y="30" width="40" height="26" rx="3" fill="#0C6E7B"/>
+          <rect x="9" y="22" width="46" height="10" rx="3" fill="#13899A"/>
+          <rect x="28" y="22" width="8" height="34" fill="#FFC93C"/>
+          <path d="M32 22c-4-9-15-11-15-4 0 4 7 4 15 4z" fill="#FFC93C" stroke="#E89B00" stroke-width="1.5"/>
+          <path d="M32 22c4-9 15-11 15-4 0 4-7 4-15 4z" fill="#FFC93C" stroke="#E89B00" stroke-width="1.5"/>
+          <circle cx="32" cy="22" r="3" fill="#E89B00"/>
+        </svg>
+      </div>
+      <div class="label" id="p4">Quà tặng<br>hấp dẫn</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Sửa chữ bằng link (không cần sửa code) ----
+  // banner.html?so=11.11&khau=KHUYẾN MÃI LỚN NHẤT NĂM&p1=Trả góp 0%&p2=Voucher|500K&p3=Giao hàng|hỏa tốc&p4=Tặng|gối massage&cach=6
+  const q = new URLSearchParams(location.search);
+  const set = (id, key) => { if (q.has(key)) document.getElementById(id).textContent = q.get(key); };
+  set('num', 'so');        // số lớn (11.11)
+  set('slogan', 'khau');   // câu khẩu hiệu trên dải vàng
+  // Ưu đãi: dùng dấu | để xuống dòng, ví dụ p2=Voucher|500K
+  ['p1','p2','p3','p4'].forEach(k => {
+    if (!q.has(k)) return;
+    const el = document.getElementById(k); el.textContent = '';
+    q.get(k).split('|').forEach((t, i) => { if (i) el.appendChild(document.createElement('br')); el.appendChild(document.createTextNode(t)); });
+  });
+  if (q.has('ten')) document.getElementById('brand').textContent = q.get('ten');
+  if (q.get('ten') === '0') document.getElementById('brand').style.display = 'none';
+
+  // Đẩy cả dải xuống (khi bị chữ của Facebook che): cach=6 nghĩa là xuống 6% chiều ngang
+  const cach = parseFloat(q.get('cach') || '0');
+  if (cach) document.getElementById('band').style.top = cach + 'vw';
+
+  // ---- Tự co chữ khẩu hiệu nếu quá dài ----
+  const rib = document.querySelector('.ribbon');
+  const fit = () => {
+    let fs = 5.2;
+    rib.style.fontSize = fs + 'vw';
+    while (rib.offsetWidth > window.innerWidth * 0.86 && fs > 3) { fs -= 0.2; rib.style.fontSize = fs + 'vw'; }
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  window.addEventListener('resize', fit);
+
+  // ---- Đèn spotlight chạy lần lượt qua 4 ưu đãi ----
+  const perks = [...document.querySelectorAll('.perk')];
+  let k = 0;
+  setInterval(() => {
+    perks.forEach(p => p.classList.remove('active'));
+    perks[k % perks.length].classList.add('active');
+    k++;
+  }, 1500);
+  perks[0].classList.add('active');
+
+  // ---- Lấp lánh ----
+  const band = document.getElementById('band');
+  const spots = [[8,13],[90,11],[16,27],[85,27],[28,7],[72,5],[5,38],[94,38],[50,3],[6,22],[95,20],[38,27],[63,27]];
+  spots.forEach(([x, y], i) => {
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.style.left = x + 'vw'; s.style.top = y + 'vw';
+    s.style.animationDelay = (i * 0.37 % 2.2) + 's';
+    const sz = 1.8 + (i % 3) * 0.9;
+    s.style.width = s.style.height = sz + 'vw';
+    band.appendChild(s);
+  });
+</script>
+</body>
+</html>
