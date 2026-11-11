@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chỉnh cỡ overlay KLC 11.11</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', sans-serif; background: #F3F5F6; color: #1A1A1A; }
+  .wrap { max-width: 460px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; font-weight: 800; margin: 4px 0 4px; }
+  p.sub { margin: 0 0 14px; color: #555; font-size: 14px; }
+  .phone {
+    position: relative; width: 240px; height: 427px; margin: 0 auto 16px;
+    border: 6px solid #1A1A1A; border-radius: 26px; overflow: hidden;
+    background: linear-gradient(#c9cfd2, #7f898d);
+  }
+  .phone .person {
+    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+    width: 120px; height: 220px; border-radius: 60px 60px 0 0; background: rgba(40,50,55,0.35);
+  }
+  .phone .person::before {
+    content: ""; position: absolute; left: 50%; top: -70px; transform: translateX(-50%);
+    width: 70px; height: 70px; border-radius: 50%; background: rgba(40,50,55,0.35);
+  }
+  .phone iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
+  .card { background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid #E2E6E8; }
+  .row { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px; }
+  .row span.val { color: #0C6E7B; font-weight: 800; }
+  input[type=range] { width: 100%; margin: 12px 0 4px; accent-color: #0C6E7B; height: 28px; }
+  .seg { display: flex; gap: 8px; margin-top: 10px; }
+  .seg button { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #C9D3D6; background: #fff; font: inherit; font-weight: 700; }
+  .seg button.on { background: #0C6E7B; color: #fff; border-color: #0C6E7B; }
+  .link { font-size: 13px; word-break: break-all; background: #F3F5F6; border-radius: 8px; padding: 10px; margin: 8px 0 10px; }
+  .btn { display: block; width: 100%; padding: 14px; border: 0; border-radius: 12px; font: inherit; font-weight: 800; font-size: 16px; text-align: center; text-decoration: none; }
+  .btn.main { background: #0C6E7B; color: #fff; }
+  .btn.ghost { background: #fff; color: #0C6E7B; border: 1px solid #0C6E7B; margin-top: 8px; }
+  .ok { text-align: center; color: #0C6E7B; font-weight: 700; height: 22px; margin-top: 6px; font-size: 14px; }
+  .note { font-size: 13px; color: #555; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Chỉnh cỡ overlay 11.11</h1>
+  <p class="sub">Kéo thanh trượt, xem trước trong khung điện thoại, rồi bấm Sao chép link và dán vào PRISM.</p>
+
+  <div class="phone"><div class="person"></div><iframe id="pv" title="Xem trước"></iframe></div>
+
+  <div class="card">
+    <div class="row">Kích thước <span class="val" id="coV">75%</span></div>
+    <input type="range" id="co" min="40" max="100" step="5" value="75">
+    <div class="row">Cách mép trên <span class="val" id="cachV">2</span></div>
+    <input type="range" id="cach" min="0" max="60" step="1" value="2">
+    <div class="row" style="margin-top:6px">Mẫu</div>
+    <div class="seg">
+      <button data-v="klc-1111.html" class="on">V3 nền đỏ</button>
+      <button data-v="klc-1111-v2.html">V2 trong suốt</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">Link để dán vào PRISM</div>
+    <div class="link" id="out"></div>
+    <button class="btn main" id="copy">Sao chép link</button>
+    <a class="btn ghost" id="open" href="#" target="_blank" rel="noopener">Mở thử link</a>
+    <div class="ok" id="ok"></div>
+  </div>
+
+  <p class="note">Trong PRISM: My Studio → Widget → Web → dán link → kéo khung widget phủ kín màn hình. Đổi cỡ thì quay lại trang này, chỉnh rồi sao chép link mới, sau đó sửa link trong widget.</p>
+</div>
+
+<script>
+  const base = location.href.replace(/[^/]*$/, '');
+  const co = document.getElementById('co'), cach = document.getElementById('cach');
+  const pv = document.getElementById('pv'), out = document.getElementById('out');
+  let page = 'klc-1111.html', timer;
+
+  const url = () => base + page + '?co=' + (co.value / 100) + '&cach=' + cach.value;
+  const render = (reloadPreview) => {
+    document.getElementById('coV').textContent = co.value + '%';
+    document.getElementById('cachV').textContent = cach.value;
+    const u = url();
+    out.textContent = u;
+    document.getElementById('open').href = u;
+    clearTimeout(timer);
+    timer = setTimeout(() => { pv.src = u; }, reloadPreview ? 0 : 250);
+  };
+  co.addEventListener('input', () => render());
+  cach.addEventListener('input', () => render());
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.seg button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); page = b.dataset.v; render(true);
+  }));
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    const u = url(), ok = document.getElementById('ok');
+    try { await navigator.clipboard.writeText(u); ok.textContent = 'Đã sao chép link'; }
+    catch (e) {
+      const r = document.createRange(); r.selectNodeContents(out);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      ok.textContent = 'Bấm giữ vào link phía trên để sao chép';
+    }
+    setTimeout(() => ok.textContent = '', 2500);
+  });
+  render(true);
+</script>
+</body>
+</html>
