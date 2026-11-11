@@ -12,7 +12,7 @@
 </head>
 <body>
 <!-- Mặc định: ảnh động WebP nền trong suốt (chạy được trên iPhone/PRISM, Android, OBS) -->
-<img id="ov" src="klc-1111.webp?v=3" alt="">
+<img id="ov" src="klc-1111.webp?v=4" alt="">
 <!-- Tùy chọn ?video=1: video WebM trong suốt gốc 1080x1920 (chỉ dùng cho OBS / Chrome máy tính) -->
 <video id="vid" muted loop autoplay playsinline preload="auto"></video>
 <script>
@@ -20,14 +20,21 @@
   // cach=6 -> đẩy overlay xuống 6% chiều ngang (khi bị tên Page che)
   const cach = parseFloat(q.get('cach') || '0');
   // co=0.9 -> thu nhỏ còn 90% (giữa màn hình)
-  const co = parseFloat(q.get('co') || '1');
+  // co=0.85 (mặc định) -> overlay bằng 85% bề ngang; co=1 = to hết cỡ; co=0.75 = nhỏ hơn nữa
+  const co = Math.min(1, Math.max(0.5, parseFloat(q.get('co') || '0.85')));
+  // khi thu nhỏ: cách mép trên 2vw và bo góc cho giống khung thẻ
+  const topOff = q.has('cach') ? cach : (co < 1 ? 2 : 0);
   const apply = el => {
-    el.style.top = cach + 'vw';
-    if (co !== 1) { el.style.width = (co * 100) + '%'; el.style.left = ((1 - co) * 50) + '%'; }
+    el.style.top = topOff + 'vw';
+    if (co !== 1) {
+      el.style.width = (co * 100) + '%';
+      el.style.left = ((1 - co) * 50) + '%';
+      el.style.borderRadius = '3vw';
+    }
   };
   if (q.get('video') === '1') {
     const v = document.getElementById('vid');
-    v.src = 'klc-1111.webm?v=3'; v.style.display = 'block';
+    v.src = 'klc-1111.webm?v=4'; v.style.display = 'block';
     document.getElementById('ov').style.display = 'none';
     apply(v); v.play().catch(() => {});
   } else {
