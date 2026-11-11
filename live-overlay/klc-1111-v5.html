@@ -21,7 +21,7 @@
 </head>
 <body>
 <!-- Mặc định: ảnh động WebP nền trong suốt (chạy trên iPhone/PRISM, Android, OBS) -->
-<img id="ov" class="ov" src="klc-1111-v5.webp" alt="">
+<img id="ov" class="ov" src="klc-1111-v5.webp?v=6" alt="">
 <!-- ?video=1: video WebM gốc (chỉ cho OBS / Chrome máy tính) -->
 <video id="vid" class="ov" muted loop autoplay playsinline preload="auto"></video>
 <script>
@@ -41,7 +41,7 @@
 
   if (q.get('video') === '1') {
     const v = document.getElementById('vid');
-    v.src = 'klc-1111-v5.webm'; v.style.display = 'block';
+    v.src = 'klc-1111-v5.webm?v=6'; v.style.display = 'block';
     document.getElementById('ov').style.display = 'none';
     v.play().catch(() => {});
   }
